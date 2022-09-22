@@ -1,0 +1,52 @@
+import atencionDeAnimales.*
+import animales.*
+import dispositivos.*
+
+describe "Estación de Servicio" {
+	const dispositivoQuePuedeAtender = 
+		object {
+			method puedeAtender(animal) = true
+		}
+	const dispositivoQueNoPuedeAtender = 
+		object {
+			method puedeAtender(animal) = false
+		}
+
+	method nuevaEstacion(dispositivoA, dispositivoB, dispositivoC) = 
+		new EstacionDeServicio(
+			dispositivoA = dispositivoA, 
+			dispositivoB = dispositivoB, 
+			dispositivoC = dispositivoC)		
+
+	test "La estación puede atender cuando tiene dispositivoA que puede atender" {
+		const estacion = self.nuevaEstacion(
+			dispositivoQuePuedeAtender,
+			dispositivoQueNoPuedeAtender,
+			dispositivoQueNoPuedeAtender
+		)
+		assert.that(estacion.puedeAtender(object {}))
+	}
+	
+	test "La estación no puede atender cuando no tiene dispositivos que pueden atender" {
+		const estacion = self.nuevaEstacion(
+			dispositivoQueNoPuedeAtender,
+			dispositivoQueNoPuedeAtender,
+			dispositivoQueNoPuedeAtender
+		)
+		assert.notThat(estacion.puedeAtender(object {}))
+	}
+}
+
+describe "Dispositivos" {
+	test "Comedero Normal puede atender cuando animal tiene hambre y pesa menos que su capacidad" {
+		const comedero = new ComederoNormal(capacidad = 1000)
+		const animalLivianoConHambre = new Gallina()
+		assert.that(comedero.puedeAtender(animalLivianoConHambre))
+	}
+	
+	test "Comedero Normal no puede atender cuando animal tiene hambre y pesa más que su capacidad" {
+		const comedero = new ComederoNormal(capacidad = 3)
+		const animalPesadoConHambre = new Gallina()
+		assert.notThat(comedero.puedeAtender(animalPesadoConHambre))
+	}
+}
